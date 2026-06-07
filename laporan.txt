@@ -1,0 +1,301 @@
+Mini Project Integrasi Big Data + Business Intelligence
+
+TEMA UMUM
+“Pemanfaatan Big Data untuk Mendukung Pengambilan Keputusan Bisnis Berbasis Data” 
+
+IDENTITAS KELOMPOK
+Nama Kelompok: CEES (Collaborative Engineering & Effective Solutions)
+Anggota:  
+Cahya Ilham - J0403231139
+Muhammad Rafi Alexander Prayoga - J0403231002
+Raden Muhammad Raditya Rahman - J0403231070
+Rafii Khairan Saragih - J0403231095
+Kelas: TPL 60 A1
+
+0. PENENTUAN STUDI KASUS 
+0.1 Bidang Studi Kasus yang Dipilih 
+(Pilih salah satu atau lainnya) 
+E-Commerce 
+Transportasi 
+Kesehatan 
+Keuangan / Perbankan 
+Pendidikan (E-Learning) 
+Pertanian / Smart Farming 
+Sosial Media / Entertainment [X]
+Lainnya: ___________ 
+
+Judul Project : Implementasi Hybrid Filtering untuk Sistem Rekomendasi Film Menggunakan TF-IDF dan Matrix Factorization 
+
+0.2 Deskripsi Studi Kasus 
+Studi kasus ini membahas penerapan Big Data dan Business Intelligence dalam membangun sistem rekomendasi film. Pada platform hiburan digital seperti layanan streaming, jumlah film yang tersedia sangat banyak sehingga pengguna sering mengalami kesulitan dalam memilih film yang sesuai dengan minatnya. Oleh karena itu, diperlukan sistem rekomendasi yang mampu membantu pengguna menemukan film berdasarkan kemiripan konten maupun pola rating pengguna lain.
+
+Project ini menggunakan pendekatan Hybrid Filtering, yaitu gabungan antara Content-Based Filtering dan Collaborative Filtering. Content-Based Filtering digunakan untuk merekomendasikan film berdasarkan kemiripan informasi film seperti genre, keyword, cast, director, dan overview. Sementara itu, Collaborative Filtering menggunakan data rating pengguna untuk melihat pola kesukaan pengguna terhadap film tertentu.
+
+0.3 Permasalahan Utama 
+Permasalahan utama dalam project ini adalah bagaimana membangun sistem rekomendasi film yang mampu memberikan rekomendasi yang relevan kepada pengguna berdasarkan data film dan data rating dalam jumlah besar. Banyaknya data film dan interaksi pengguna membuat proses pencarian rekomendasi secara manual menjadi tidak efisien.
+
+0.4 Alasan Pemilihan Studi Kasus 
+Studi kasus ini penting karena sistem rekomendasi banyak digunakan dalam industri hiburan digital, seperti Netflix, Disney+, dan platform streaming lainnya. Rekomendasi yang baik dapat membantu pengguna menemukan film yang sesuai dengan minatnya, meningkatkan kepuasan pengguna, serta membantu perusahaan dalam mempertahankan engagement pengguna. 
+
+0.5 Contoh Ide Studi Kasus (Referensi) 
+• Prediksi tren film atau konten hiburan 
+
+BUSINESS UNDERSTANDING 
+Latar Belakang Masalah 
+Perkembangan platform hiburan digital menyebabkan jumlah film dan konten yang tersedia semakin banyak. Kondisi ini memberikan banyak pilihan kepada pengguna, tetapi juga menimbulkan masalah baru, yaitu pengguna dapat merasa bingung dalam memilih film yang sesuai dengan preferensinya. Jika pengguna tidak menemukan film yang menarik, maka pengalaman pengguna terhadap platform dapat menurun.
+
+Untuk mengatasi masalah tersebut, sistem rekomendasi film dapat digunakan sebagai solusi berbasis data. Sistem ini memanfaatkan data metadata film dan data rating pengguna untuk menghasilkan rekomendasi yang lebih relevan. Dengan pendekatan Hybrid Filtering, sistem tidak hanya melihat kemiripan konten film, tetapi juga mempertimbangkan pola rating pengguna lain.
+
+Tujuan Project 
+Tujuan dari project ini adalah membangun sistem rekomendasi film berbasis Big Data yang mampu memberikan rekomendasi film berdasarkan kemiripan konten dan pola rating pengguna. Selain itu, project ini bertujuan untuk menerapkan proses data cleaning, data transformation, feature engineering, serta analisis menggunakan tools Big Data dan machine learning.
+Pertanyaan Bisnis (Minimal 3) 
+1. Bagaimana cara memberikan rekomendasi film yang relevan berdasarkan genre, keyword, cast, director, dan overview film?
+2. Bagaimana data rating pengguna dapat dimanfaatkan untuk meningkatkan personalisasi rekomendasi film?
+3. Bagaimana sistem rekomendasi dapat membantu platform hiburan digital dalam meningkatkan pengalaman dan keterlibatan pengguna?
+4. Film seperti apa yang cenderung memiliki kemiripan tinggi berdasarkan informasi metadata film?
+
+
+ Manfaat Project 
+Project ini bermanfaat untuk membantu pengguna menemukan film yang sesuai dengan preferensinya secara lebih cepat. Bagi bisnis, sistem rekomendasi dapat digunakan untuk meningkatkan kepuasan pengguna, meningkatkan waktu penggunaan platform, serta membantu strategi promosi konten berdasarkan pola minat pengguna.
+
+DATA UNDERSTANDING 
+Sumber Dataset 
+https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset 
+
+Deskripsi Dataset 
+movies_metadata
+Jumlah data: 45.000 film
+Jumlah fitur: 24 fitur 
+Jenis data: Data Numerik, Kategorikal, Teks/NLP, dan Time Series
+credits
+Jumlah data: 45.000 film
+Jumlah fitur: 3 fitur
+Jenis data: Data Teks/NLP dan Kategorikal
+keywords
+Jumlah data: 45.000 film
+Jumlah fitur: 2 fitur
+Jenis data: Data Teks/NLP
+links
+Jumlah data: 45.000 data
+Jumlah fitur: 3 fitur
+Jenis data: Data Numerik
+links_small
+Jumlah data: 9.000 data
+Jumlah fitur: 3 fitur
+Jenis data: Data Numerik
+ratings
+Jumlah data: 26.000.000 rating
+Jumlah fitur: 4 fitur
+Jenis data: Data Numerik dan Time Series
+ratings_small
+Jumlah data: 100.000 rating
+Jumlah fitur: 4 fitur
+Jenis data: Data Numerik dan Time Series
+ 
+Variabel Penting 
+Beberapa variabel penting yang digunakan dalam project ini adalah:
+
+title digunakan sebagai nama film yang akan ditampilkan kepada pengguna.
+overview digunakan sebagai deskripsi singkat film dan menjadi salah satu sumber informasi utama dalam pembentukan fitur teks.
+genres digunakan untuk mengetahui kategori film, misalnya Action, Comedy, Drama, Animation, dan lainnya.
+keywords digunakan untuk menggambarkan kata kunci atau tema utama dari film.
+cast digunakan untuk mengambil aktor utama dalam film.
+crew/director digunakan untuk mengambil nama sutradara film.
+rating digunakan untuk mengetahui penilaian pengguna terhadap film.
+movieId dan tmdbId digunakan sebagai penghubung antara data MovieLens dan data TMDB.
+
+Insight Awal (Hipotesis)
+Film yang memiliki genre, keyword, dan overview yang mirip cenderung memiliki tingkat kemiripan konten yang tinggi sehingga dapat direkomendasikan menggunakan metode Content-Based Filtering.
+
+Informasi overview, genre, keyword, cast, dan director dapat digunakan sebagai fitur teks untuk membangun sistem rekomendasi film berbasis NLP menggunakan TF-IDF dan Cosine Similarity.
+
+Penggunaan teknik TF-IDF dapat membantu merepresentasikan kata-kata penting dalam deskripsi film sehingga sistem mampu menemukan kemiripan antar film dengan lebih baik.
+
+Cosine Similarity dapat digunakan untuk menghitung tingkat kemiripan antar film berdasarkan representasi vektor hasil TF-IDF.
+
+Penggunaan PySpark dan Spark SQL dapat membantu proses pengolahan data berskala besar, terutama dalam melakukan filtering, grouping, aggregation, dan join data film maupun rating pengguna secara lebih efisien. 
+
+DATA PREPARATION 
+Data Cleaning 
+movies = movies[['id', 'title', 'overview', 'genres']]
+
+
+movies['id'] = movies['id'].astype(int)
+keywords['id'] = keywords['id'].astype(int)
+credits['id'] = credits['id'].astype(int)
+
+
+movies = movies.merge(keywords, on='id')
+movies = movies.merge(credits, on='id')
+
+Missing Values 
+print(movies.isnull().sum())
+print(movies.duplicated().sum())
+
+
+final_movies = final_movies.dropna(subset=['title'])
+final_movies = final_movies.dropna(subset=['tags'])
+
+
+movies['overview'] = movies['overview'].fillna('')
+ 
+Transformasi Data 
+for feature in features:
+    movies[feature] = movies[feature].apply(ast.literal_eval)
+
+def get_names(data):
+    return [item['name'] for item in data]
+
+
+def get_top_cast(data):
+    names = [item['name'] for item in data]
+    return names[:3]
+
+
+def get_director(data):
+    for item in data:
+        if item['job'] == 'Director':
+            return item['name']
+    return ''
+
+movies['genres'] = movies['genres'].apply(get_names)
+
+
+movies['keywords'] = movies['keywords'].apply(get_names)
+
+
+movies['cast'] = movies['cast'].apply(get_top_cast)
+
+
+movies['director'] = movies['crew'].apply(get_director)
+
+movies['tags'] = (
+    movies['overview'] + ' ' +
+    movies['genres'].apply(lambda x: ' '.join(x)) + ' ' +
+    movies['keywords'].apply(lambda x: ' '.join(x)) + ' ' +
+    movies['cast'].apply(lambda x: ' '.join(x)) + ' ' +
+    movies['director']
+)
+
+DATA PROCESSING (BIG DATA) 
+Tools yang Digunakan 
+- Python
+- Pandas, NumPy
+- Scikit-learn
+- SciPy
+- NLTK
+- PySpark
+- Matplotlib, Seaborn
+- Flask
+- Pickle
+
+Proses yang Dilakukan 
+- Filtering data film dan rating untuk menghapus duplikat, missing value, dan film tanpa metadata penting.
+- Grouping dan aggregation untuk analisis jumlah rating per film, distribusi rating, dan jumlah film per tahun rilis.
+- Join data TMDB dan MovieLens untuk menggabungkan metadata film dengan rating pengguna.
+- Transformasi JSON nested pada kolom genres, keywords, cast, dan crew menjadi daftar nama.
+- Feature engineering untuk menggabungkan overview, genre, keyword, cast, dan director ke dalam kolom tags.
+- Vectorisasi teks menggunakan TF-IDF dan perhitungan cosine similarity untuk rekomendasi berbasis konten.
+- Penyusunan matriks user-item dan dekomposisi SVD untuk collaborative filtering.
+- Visualisasi insight menggunakan Spark SQL, analisis genre, rating, film terpopuler berdasarkan jumlah rating, jumlah film per tahun, dan user aktif.
+
+Alur Proses Data 
+1. Baca dataset mentah dari folder Dataset (movies_metadata.csv, credits.csv, keywords.csv, ratings.csv, links.csv).
+2. Lakukan pembersihan data awal: hapus duplikat, ubah tipe data, dan isi missing values pada overview.
+3. Parse kolom JSON untuk genres, keywords, cast, dan crew, lalu ekstrak nama yang relevan.
+4. Gabungkan dataset metadata film dengan data keywords, credits, dan link MovieLens.
+5. Bentuk kolom tags untuk fitur teks gabungan dan simpan dataset bersih ke clean_movies.csv serta clean_ratings.csv.
+6. Latih model CBF dengan TF-IDF dan hitung cosine similarity antar film.
+7. Latih model CF dengan membuat matriks sparse user-item dan menerapkan SVD untuk prediksi rating.
+8. Gunakan PySpark untuk analisis tambahan: top genre, distribusi rating, top film terbanyak dirating, jumlah film per tahun, dan top user aktif.
+9. Simpan hasil model dan objek pendukung dalam folder models agar dapat digunakan kembali tanpa retraining penuh.
+
+ANALYTICS / MODELING (boleh pilih salah satu) 
+Metode yang Digunakan 
+- Hybrid Filtering: gabungan Content-Based Filtering dan Collaborative Filtering.
+- Content-Based Filtering menggunakan TF-IDF untuk memodelkan fitur teks dari kolom tags dan menghitung cosine similarity antar film.
+- Collaborative Filtering menggunakan matrix factorization SVD pada matriks user-item dari data rating MovieLens.
+
+Alasan Pemilihan Metode 
+- Content-Based Filtering dapat merekomendasikan film berdasarkan kesamaan metadata dan teks, sehingga relevan untuk film dengan konten serupa.
+- Collaborative Filtering menangkap pola preferensi pengguna dari data rating, sehingga meningkatkan personalisasi rekomendasi.
+- Hybrid Filtering menggabungkan kedua metode agar rekomendasi tidak hanya bergantung pada kemiripan konten tetapi juga pada kecenderungan rating pengguna.
+
+Hasil Model / Analisis 
+- Model menghasilkan DataFrame film bersih serta objek model yang disimpan di folder models: movies.pkl, similarity.pkl, cf_predictions.pkl, movie_id_to_idx.pkl, tfidf_vectorizer.pkl, tfidf_matrix.pkl.
+- Rekomendasi film muncul dalam bentuk peringkat top-N berdasarkan skor hybrid yang terdiri dari skor CBF dan skor CF.
+- Contoh hasil analisis adalah daftar rekomendasi film serupa untuk judul input tertentu, dengan skor CBF dan CF yang ditampilkan.
+
+Evaluasi Model 
+- Evaluasi dilakukan dengan menguji rekomendasi menggunakan sample query film dan membandingkan hasil rekomendasi yang dihasilkan oleh CBF, CF, dan hybrid.
+- Evaluasi juga melihat kualitas output rekomendasi dari sudut pandang relevansi konten dan popularitas berdasarkan data rating.
+- Hasil evaluasi menunjukkan bahwa rekomendasi hybrid lebih seimbang karena memadukan kemiripan konten dan preferensi pengguna.
+
+INSIGHT & REKOMENDASI 
+Insight Utama (Minimal 2) 
+Film yang memiliki kesamaan genre, keyword, cast, director, dan overview cenderung menghasilkan rekomendasi yang relevan. Hal ini terlihat dari contoh rekomendasi Toy Story yang menghasilkan film-film dengan karakteristik serupa.
+Penggabungan beberapa fitur teks dalam kolom tags dapat membantu sistem memahami karakteristik film secara lebih menyeluruh. Sistem tidak hanya melihat genre, tetapi juga mempertimbangkan alur cerita, kata kunci, aktor, dan sutradara.
+Data rating pengguna dapat digunakan untuk memperkuat hasil rekomendasi agar tidak hanya berdasarkan kemiripan konten, tetapi juga berdasarkan pola kesukaan pengguna lain.
+Rekomendasi Bisnis
+Sistem rekomendasi ini dapat diterapkan pada platform streaming film untuk fitur seperti “Recommended for You”, “Similar Movies”, atau “Because You Watched”. Dengan sistem ini, pengguna dapat menemukan film yang sesuai dengan minatnya secara lebih cepat.
+Bagi perusahaan, rekomendasi film dapat meningkatkan engagement pengguna, memperpanjang durasi penggunaan aplikasi, dan membantu strategi promosi konten. Film yang memiliki rating tinggi atau sering direkomendasikan dapat diprioritaskan dalam halaman utama platform.
+ 
+REFLEKSI KELOMPOK 
+Kendala yang Dihadapi 
+Kendala yang dihadapi dalam project ini adalah ukuran dataset yang cukup besar, terutama pada file rating yang mencapai jutaan data. Selain itu, beberapa kolom seperti genre, keyword, cast, dan crew memiliki format nested sehingga perlu diproses terlebih dahulu sebelum digunakan.
+Kendala lainnya adalah adanya missing values pada beberapa kolom, perbedaan tipe data pada kolom id, serta kebutuhan memori yang besar saat menghitung similarity matrix untuk banyak film.
+
+Solusi yang Dilakukan 
+Solusi yang dilakukan adalah melakukan data cleaning, mengisi nilai kosong pada overview, menghapus data yang tidak memiliki title atau tags, serta menyamakan tipe data id sebelum proses merge. Untuk mengatasi data yang besar, PySpark dapat digunakan pada tahap filtering, grouping, aggregation, dan join.
+Pada proses modeling, fitur teks digabungkan ke dalam kolom tags agar lebih mudah diproses menggunakan TF-IDF. Selain itu, hasil model disimpan menggunakan Pickle agar dapat digunakan kembali tanpa perlu melakukan training ulang.
+
+Pembelajaran yang Didapat 
+Dari project ini, kelompok mempelajari bagaimana proses pengolahan data besar dilakukan mulai dari data understanding, data preparation, data processing, hingga modeling. Kelompok juga memahami pentingnya feature engineering dalam membangun sistem rekomendasi film.
+Selain itu, project ini memberikan pemahaman mengenai penerapan Big Data dan Business Intelligence dalam industri hiburan digital, terutama bagaimana data dapat digunakan untuk mendukung pengambilan keputusan bisnis.
+
+LAMPIRAN 
+Link Koding (Colab/Github): 
+- GitHub repository atau folder project lokal di film-recommendation.
+
+Dokumentasi (Screenshot/Visualisasi): 
+- Visualisasi insight tersedia di folder insight/ sebagai file PNG, misalnya 1_top_genre.png, 2_distribusi_rating.png, 3_top_film_dirating.png, 4_film_per_tahun.png, dan 5_top_user_aktif.png.
+- Dokumentasi juga dapat mencakup screenshot output aplikasi Flask dan contoh rekomendasi yang dihasilkan.
+
+Panduan Publikasi Jurnal Mahasiswa  
+1. Kriteria Jurnal Target : diharapkan jurnal SINTA 4 (jika memungkinkan keatas), tidak 
+diharapkan dari SINTA 5 atau 6 (dengan mempertimbangkan proses review yang 
+berbeda dengan SINTA 4 keatas yang lebih detail saat mereview hasil jurnal kalian) 
+2. Kesesuaian Scope (wajib!) :  
+Mahasiswa harus memastikan jurnal yang dipilih sesuai dengan topik project. 
+Contoh Scope yang Sesuai: 
+• Big Data  
+• Data Science / Machine Learning  
+• Business Intelligence  
+• Sistem Informasi  
+• Artificial Intelligence  
+• IoT (jika terkait)  
+Tidak diperbolehkan: 
+• Mengirim ke jurnal yang tidak relevan (misal: jurnal hukum, pendidikan umum 
+tanpa IT, dll) 
+3. Penulisan nama di jurnal (nama pertama mahasiswa yang paling bertanggung jawab 
+pada jurnal tersebut atau ketua kelompoknya), mencantumkan nama dosen 
+pembimbing/dosen pengampu di MK (daftar pembagian dosen akan diberikan di link 
+yang berbeda) 
+4. Menuliskan jurnal berdasarkan template yang diberikan dari masing-masing jurnal 
+dan mengikuti standar serta aturan dari jurnal yang bersangkutan 
+5. Kualitas konten yang diharapkan (sebagai panduan kalian agar kontennya tertata 
+dengan baik dan diterima oleh publisher): 
+Artikel harus menunjukkan: 
+1. Problem yang jelas 
+• Bukan hanya “analisis data”  
+• Harus ada tujuan bisnis / keputusan 
+2. Penggunaan Big Data Tools 
+• Wajib ada penggunaan:  
+o Spark / PySpark  
+• Ditunjukkan dalam metodologi  
+3. Insight (bukan hanya grafik) 
+• Harus ada:  
+o interpretasi hasil  
+o dampak ke bisnis / keputusan  
+4. Referensi Ilmiah 
+• Minimal 10 referensi (atau perhatikan juga dari template yang diberikan)

@@ -154,7 +154,7 @@ stemmer = PorterStemmer()
 merged['tags'] = merged['tags'].apply(lambda text: stem_text(text, stemmer))
 
 # Keep only movies with some tag content
-final_movies = merged[['id', 'title', 'tags']].copy()
+final_movies = merged[['id', 'title', 'genres', 'tags']].copy()
 final_movies = final_movies[final_movies['tags'].str.strip() != '']
 
 final_movies.to_csv(OUTPUT_PATH, index=False)

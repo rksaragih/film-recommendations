@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Matchinema</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface2: #1a1a26;
+            --accent: #e8c547;
+            --accent2: #ff6b35;
+            --text: #f0ede6;
+            --muted: #ffffff;
+            --border: #2a2a3a;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.4;
+        }
+
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow-orb-1 { width: 500px; height: 500px; background: rgba(232,197,71,0.07); top: -150px; left: -150px; }
+        .glow-orb-2 { width: 400px; height: 400px; background: rgba(255,107,53,0.06); bottom: -100px; right: -100px; }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 44px;
+            letter-spacing: 0.06em;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .field-input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 22px;
+            font-weight: 300;
+            outline: none;
+            transition: border-color 0.2s;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .field-input:focus { border-color: var(--accent); }
+        .field-input::placeholder { color: var(--muted); font-size: 16px; letter-spacing: 0.05em; }
+
+        .field-hint {
+            font-size: 12px;
+            color: var(--muted);
+            font-style: italic;
+            margin-bottom: 28px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            color: #0a0a0f;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+
+        .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-submit:active { transform: translateY(0); }
+
+        .error-box {
+            background: rgba(255,107,53,0.08);
+            border: 1px solid rgba(255,107,53,0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--accent2);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            letter-spacing: 0.08em;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <div class="card">
+        <div class="logo">Matchinema</div>
+        <p class="tagline">Masuk untuk rekomendasi personal</p>
+
+        {% if error %}
+        <div class="error-box">⚠ {{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/login">
+            <label class="field-label" for="user_id">User ID</label>
+            <input
+                id="user_id"
+                name="user_id"
+                type="number"
+                class="field-input"
+                placeholder="Masukkan ID-mu"
+                autofocus
+                min="1"
+            />
+            <p class="field-hint">User ID berupa angka.</p>
+            <button type="submit" class="btn-submit">Masuk</button>
+        </form>
+
+        <a href="/" class="back-link">← Kembali ke beranda</a>
+    </div>
+</body>
+</html>

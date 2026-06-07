@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineMatch — Film Recommendation</title>
+    <title>Matchinema — Film Recommendation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <style>
@@ -16,7 +16,7 @@
             --accent: #e8c547;
             --accent2: #ff6b35;
             --text: #f0ede6;
-            --muted: #6b6880;
+            --muted: #ffffff;
             --border: #2a2a3a;
         }
 
@@ -28,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* Grain overlay */
         body::before {
             content: '';
             position: fixed;
@@ -39,7 +38,6 @@
             opacity: 0.4;
         }
 
-        /* Ambient glow */
         .glow-orb {
             position: fixed;
             border-radius: 50%;
@@ -47,16 +45,8 @@
             pointer-events: none;
             z-index: 0;
         }
-        .glow-orb-1 {
-            width: 500px; height: 500px;
-            background: rgba(232, 197, 71, 0.06);
-            top: -100px; left: -100px;
-        }
-        .glow-orb-2 {
-            width: 400px; height: 400px;
-            background: rgba(255, 107, 53, 0.05);
-            bottom: 0; right: -100px;
-        }
+        .glow-orb-1 { width: 500px; height: 500px; background: rgba(232,197,71,0.06); top: -100px; left: -100px; }
+        .glow-orb-2 { width: 400px; height: 400px; background: rgba(255,107,53,0.05); bottom: 0; right: -100px; }
 
         .container {
             max-width: 860px;
@@ -66,307 +56,319 @@
             z-index: 1;
         }
 
-        /* Header */
+        /* ── HEADER ── */
         header {
-            padding: 60px 0 48px;
-            text-align: center;
+            padding: 48px 0 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .logo {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(52px, 10vw, 88px);
+            font-size: clamp(36px, 7vw, 56px);
             letter-spacing: 0.06em;
-            line-height: 0.9;
+            line-height: 1;
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .tagline {
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 300;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            margin-top: 10px;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        /* Search form */
-        .search-section {
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 40px;
-        }
-
-        .search-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 12px;
-        }
-
-        .search-row {
-            display: flex;
-            gap: 12px;
-            align-items: stretch;
-        }
-
-        .search-input-wrap {
-            flex: 1;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 14px 18px;
-            color: var(--text);
+            padding: 8px 14px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .user-badge span { color: var(--accent); font-weight: 500; }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: var(--muted);
             font-family: 'DM Sans', sans-serif;
-            font-size: 15px;
-            outline: none;
-            transition: border-color 0.2s;
-            list-style: none;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s, border-color 0.2s;
         }
+        .btn-logout:hover { color: var(--accent2); border-color: var(--accent2); }
 
-        .search-input:focus {
-            border-color: var(--accent);
-        }
-
-        .search-input::placeholder { color: var(--muted); }
-
-        /* datalist styling via webkit */
-        .search-input::-webkit-calendar-picker-indicator { display: none; }
-
-        .btn-search {
+        .btn-login {
             background: linear-gradient(135deg, var(--accent), var(--accent2));
             border: none;
-            border-radius: 10px;
-            padding: 14px 28px;
+            border-radius: 8px;
+            padding: 9px 20px;
             color: #0a0a0f;
             font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
+            text-decoration: none;
             letter-spacing: 0.05em;
-            white-space: nowrap;
             transition: opacity 0.2s, transform 0.15s;
         }
+        .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        .btn-search:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-search:active { transform: translateY(0); }
-
-        /* Error */
-        .error-box {
-            background: rgba(255, 107, 53, 0.08);
-            border: 1px solid rgba(255, 107, 53, 0.3);
-            border-radius: 10px;
-            padding: 14px 18px;
-            color: var(--accent2);
-            font-size: 14px;
-            margin-top: 16px;
+        /* ── HERO (guest) ── */
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px;
         }
 
-        /* Results */
-        .results-header {
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(48px, 10vw, 80px);
+            letter-spacing: 0.06em;
+            line-height: 0.95;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .hero-sub {
+            color: var(--muted);
+            font-size: 15px;
+            font-weight: 300;
+            max-width: 420px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+        }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
             display: flex;
             align-items: baseline;
             gap: 12px;
             margin-bottom: 20px;
         }
 
-        .results-title {
+        .section-title {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px;
+            font-size: 26px;
             letter-spacing: 0.08em;
             color: var(--text);
         }
 
-        .results-query {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px;
-            letter-spacing: 0.08em;
-            color: var(--accent);
+        .section-subtitle {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
         }
 
-        .results-count {
+        .section-count {
             font-size: 12px;
             color: var(--muted);
             margin-left: auto;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
-        /* Card */
+        /* ── MODE BADGE ── */
+        .mode-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(232,197,71,0.08);
+            border: 1px solid rgba(232,197,71,0.2);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        .mode-badge.cold {
+            background: rgba(255,107,53,0.08);
+            border-color: rgba(255,107,53,0.2);
+            color: var(--accent2);
+        }
+
+        /* ── CARDS ── */
         .card-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 60px;
+            gap: 10px;
+            margin-bottom: 48px;
         }
 
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 20px 24px;
+            padding: 18px 22px;
             display: grid;
-            grid-template-columns: 36px 1fr auto;
+            grid-template-columns: 32px 1fr auto;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             transition: border-color 0.2s, transform 0.2s;
             animation: slideUp 0.3s ease both;
         }
 
+        .card:nth-child(1)  { animation-delay: 0.04s; }
+        .card:nth-child(2)  { animation-delay: 0.08s; }
+        .card:nth-child(3)  { animation-delay: 0.12s; }
+        .card:nth-child(4)  { animation-delay: 0.16s; }
+        .card:nth-child(5)  { animation-delay: 0.20s; }
+        .card:nth-child(6)  { animation-delay: 0.24s; }
+        .card:nth-child(7)  { animation-delay: 0.28s; }
+        .card:nth-child(8)  { animation-delay: 0.32s; }
+        .card:nth-child(9)  { animation-delay: 0.36s; }
+        .card:nth-child(10) { animation-delay: 0.40s; }
+
         .card:hover {
-            border-color: rgba(232, 197, 71, 0.3);
+            border-color: rgba(232,197,71,0.3);
             transform: translateX(4px);
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(16px); }
+            from { opacity: 0; transform: translateY(10px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-
-        .card:nth-child(1) { animation-delay: 0.05s; }
-        .card:nth-child(2) { animation-delay: 0.10s; }
-        .card:nth-child(3) { animation-delay: 0.15s; }
-        .card:nth-child(4) { animation-delay: 0.20s; }
-        .card:nth-child(5) { animation-delay: 0.25s; }
 
         .card-rank {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 22px;
-            color: var(--muted);
+            color: var(--border);
             text-align: center;
             line-height: 1;
         }
 
-        .card:nth-child(1) .card-rank { color: var(--accent); }
+        .card:hover .card-rank { color: var(--accent); }
+
+        .card-body { min-width: 0; }
 
         .card-title {
             font-size: 15px;
             font-weight: 500;
-            color: var(--text);
-            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
         }
 
-        .card-scores {
+        .card-genres {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
-        .score-final {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px;
-            letter-spacing: 0.05em;
-            color: var(--accent);
-            line-height: 1;
-        }
-
-        .score-detail {
+        .genre-tag {
             font-size: 10px;
-            color: var(--muted);
             letter-spacing: 0.08em;
             text-transform: uppercase;
+            color: var(--muted);
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 7px;
         }
 
-        /* Score bar */
-        .score-bar-wrap {
-            grid-column: 2 / 4;
-            height: 3px;
+        .card-score-wrap { text-align: right; }
+
+        .card-score-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 22px;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-score-label {
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* score bar spanning full width */
+        .card-bar {
+            grid-column: 1 / -1;
+            height: 2px;
             background: var(--border);
             border-radius: 2px;
-            margin-top: -8px;
+            margin-top: -6px;
             overflow: hidden;
         }
 
-        .score-bar-fill {
+        .card-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--accent), var(--accent2));
             border-radius: 2px;
-            transition: width 0.6s ease;
+            transition: width 0.7s ease;
         }
 
-        /* Empty state */
+        /* ── HISTORY STRIP ── */
+        .history-section {
+            margin-bottom: 36px;
+        }
+
+        .history-strip {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .history-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+
+        .history-chip-title { color: var(--text); }
+
+        .history-chip-rating {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 15px;
+            color: var(--accent);
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 36px 0;
+        }
+
+        /* ── EMPTY STATE ── */
         .empty-state {
             text-align: center;
             padding: 80px 0;
             color: var(--muted);
         }
+        .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+        .empty-text { font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; }
 
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.4;
-        }
-
-        .empty-text {
-            font-size: 14px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        /* Search mode tabs */
-        .search-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .search-tab {
-            padding: 12px 16px;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: var(--muted);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            transition: color 0.2s, border-color 0.2s;
-        }
-
-        .search-tab:hover { color: var(--text); }
-
-        .search-tab.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-
-        .search-content {
-            display: none;
-        }
-
-        .search-content.active {
-            display: block;
-            animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .hint-text {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 8px;
-            font-style: italic;
-        }
-
+        /* ── FOOTER ── */
         footer {
             text-align: center;
             padding: 32px 0;
@@ -378,11 +380,10 @@
         }
 
         @media (max-width: 540px) {
-            .search-row { flex-direction: column; }
             .card { grid-template-columns: 28px 1fr; }
-            .card-scores { display: none; }
-            .score-bar-wrap { grid-column: 2; }
-            .search-tabs { margin-bottom: 16px; }
+            .card-score-wrap { display: none; }
+            .header-right { gap: 8px; }
+            .user-badge { display: none; }
         }
     </style>
 </head>
@@ -391,130 +392,142 @@
     <div class="glow-orb glow-orb-2"></div>
 
     <div class="container">
+
+        <!-- ── HEADER ── -->
         <header>
-            <div class="logo">CineMatch</div>
-            <p class="tagline">Hybrid Film Recommendation &mdash; TF-IDF &times; SVD</p>
+            <div class="logo">Matchinema</div>
+            <div class="header-right">
+                {% if user_id %}
+                    <div class="user-badge">👤 User <span>#{{ user_id }}</span></div>
+                    <a href="/logout" class="btn-logout">Logout</a>
+                {% else %}
+                    <a href="/login" class="btn-login">Login</a>
+                {% endif %}
+            </div>
         </header>
 
-        <!-- Search Form -->
-        <section class="search-section">
-            <!-- Search Mode Tabs -->
-            <div class="search-tabs">
-                <button type="button" class="search-tab {% if search_mode == 'title' %}active{% endif %}" onclick="switchMode('title')">
-                    📽️ Cari Judul Film
-                </button>
-                <button type="button" class="search-tab {% if search_mode == 'keyword' %}active{% endif %}" onclick="switchMode('keyword')">
-                    🔍 Cari dengan Keyword
-                </button>
-            </div>
-
-            <!-- Title Search Mode -->
-            <form id="title-form" method="POST" action="/" class="search-content {% if search_mode == 'title' %}active{% endif %}">
-                <input type="hidden" name="search_mode" value="title">
-                <label class="search-label" for="movie_title">Judul Film Lengkap</label>
-                <div class="search-row">
-                    <div class="search-input-wrap">
-                        <input
-                            id="movie_title"
-                            name="movie_title"
-                            class="search-input"
-                            type="text"
-                            list="movie-list"
-                            placeholder="cth. Toy Story, The Dark Knight..."
-                            value="{% if search_mode == 'title' %}{{ query }}{% endif %}"
-                            autocomplete="off"
-                        />
-                        <datalist id="movie-list">
-                            {% for title in movie_titles %}
-                            <option value="{{ title }}">
-                            {% endfor %}
-                        </datalist>
-                    </div>
-                    <button type="submit" class="btn-search">Cari</button>
-                </div>
-                <div class="hint-text">💡 Pilih dari daftar film yang tersedia di dataset</div>
-                {% if error and search_mode == 'title' %}
-                <div class="error-box">{{ error }}</div>
-                {% endif %}
-            </form>
-
-            <!-- Keyword Search Mode -->
-            <form id="keyword-form" method="POST" action="/" class="search-content {% if search_mode == 'keyword' %}active{% endif %}">
-                <input type="hidden" name="search_mode" value="keyword">
-                <label class="search-label" for="keyword">Deskripsi / Keyword Film</label>
-                <div class="search-row">
-                    <div class="search-input-wrap">
-                        <textarea
-                            id="keyword"
-                            name="keyword"
-                            class="search-input"
-                            placeholder="cth. film action dengan aktor tom cruise, thriller sci-fi, atau deskripsi film apapun..."
-                            style="resize: vertical; min-height: 80px; font-family: 'DM Sans', sans-serif;"
-                        >{% if search_mode == 'keyword' %}{{ query }}{% endif %}</textarea>
-                    </div>
-                </div>
-                <div class="search-row">
-                    <div class="search-input-wrap" style="flex: 1;"></div>
-                    <button type="submit" class="btn-search">Cari</button>
-                </div>
-                <div class="hint-text">💡 Ketik dalam Bahasa Indonesia atau Inggris — sistem otomatis menerjemahkan. Cocok untuk film baru atau yang tidak ada di dataset</div>
-                {% if error and search_mode == 'keyword' %}
-                <div class="error-box">{{ error }}</div>
-                {% endif %}
-            </form>
-        </section>
-
-        <!-- Results -->
-        {% if recommendations %}
-        <div class="results-header">
-            <span class="results-title">Rekomendasi untuk</span>
-            <span class="results-query">{{ query }}</span>
-            <span class="results-count">{{ recommendations|length }} film</span>
+        <!-- ════════════════════════════════
+             GUEST — belum login
+        ════════════════════════════════ -->
+        {% if not user_id %}
+        <div class="hero">
+            <div class="hero-title">Film yang<br>Cocok Untukmu</div>
+            <p class="hero-sub">
+                Login dengan User ID-mu untuk mendapatkan rekomendasi film yang dipersonalisasi berdasarkan preferensimu.
+            </p>
+            <a href="/login" class="btn-login" style="padding: 13px 32px; font-size: 14px;">Mulai Sekarang</a>
         </div>
+
+        <!-- ════════════════════════════════
+             USER LAMA — rekomendasi personal via SVD
+        ════════════════════════════════ -->
+        {% elif mode == 'personal' %}
+
+        <div class="mode-badge">✦ Rekomendasi Personal</div>
+
+        {% if user_history %}
+        <div class="history-section">
+            <div class="section-header">
+                <span class="section-title">Tontonanmu</span>
+                <span class="section-subtitle">Rating tertinggi</span>
+            </div>
+            <div class="history-strip">
+                {% for item in user_history %}
+                <div class="history-chip">
+                    <span class="history-chip-title">{{ item.title }}</span>
+                    <span class="history-chip-rating">★ {{ item.rating }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <hr class="divider">
+        {% endif %}
+
+        <div class="section-header">
+            <span class="section-title">Rekomendasi Untukmu</span>
+            <span class="section-count">{{ recommendations|length }} film</span>
+        </div>
+
+        {% if recommendations %}
         <div class="card-list">
             {% for movie in recommendations %}
             <div class="card">
                 <div class="card-rank">{{ loop.index }}</div>
-                <div class="card-title">{{ movie.title }}</div>
-                <div class="card-scores">
-                    <div class="score-final">{{ "%.4f"|format(movie.final_score) }}</div>
-                    <div class="score-detail">CBF {{ "%.3f"|format(movie.cbf_score) }} &nbsp;·&nbsp; CF {{ "%.3f"|format(movie.cf_score) }}</div>
+                <div class="card-body">
+                    <div class="card-title">{{ movie.title }}</div>
+                    <div class="card-genres">
+                        {% for genre in movie.genres[:3] %}
+                        <span class="genre-tag">{{ genre }}</span>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="score-bar-wrap">
-                    <div class="score-bar-fill" style="width: {{ (movie.final_score * 100)|round }}%"></div>
+                <div class="card-score-wrap">
+                    <div class="card-score-value">{{ "%.2f"|format(movie.score * 100) }}</div>
+                    <div class="card-score-label">Match %</div>
+                </div>
+                <div class="card-bar">
+                    <div class="card-bar-fill" style="width: {{ (movie.score * 100)|round }}%"></div>
                 </div>
             </div>
             {% endfor %}
         </div>
-
-        {% elif query and not error %}
+        {% else %}
         <div class="empty-state">
             <div class="empty-icon">🎬</div>
-            <p class="empty-text">Tidak ada hasil ditemukan</p>
-        </div>
-
-        {% elif not query %}
-        <div class="empty-state">
-            <div class="empty-icon">🎞️</div>
-            <p class="empty-text">Masukkan judul film untuk mulai</p>
+            <p class="empty-text">Belum ada rekomendasi tersedia</p>
         </div>
         {% endif %}
 
-        <footer>IPB University &mdash; Big Data Project &mdash; Semester 6</footer>
+        <!-- ════════════════════════════════
+             USER BARU — cold start via genre
+        ════════════════════════════════ -->
+        {% elif mode == 'cold_start' %}
+
+        <div class="mode-badge cold">🎯 Berdasarkan Genre Pilihanmu</div>
+
+        <div class="section-header">
+            <span class="section-title">Film Populer Untukmu</span>
+            <span class="section-count">{{ recommendations|length }} film</span>
+        </div>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 24px; font-style: italic;">
+            Rekomendasi ini berdasarkan genre yang kamu pilih dan rating tertinggi dari pengguna lain.
+            Seiring kamu memberi rating pada film, rekomendasi akan semakin personal.
+        </p>
+
+        {% if recommendations %}
+        <div class="card-list">
+            {% for movie in recommendations %}
+            <div class="card">
+                <div class="card-rank">{{ loop.index }}</div>
+                <div class="card-body">
+                    <div class="card-title">{{ movie.title }}</div>
+                    <div class="card-genres">
+                        {% for genre in movie.genres[:3] %}
+                        <span class="genre-tag">{{ genre }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-score-wrap">
+                    <div class="card-score-value">★ {{ movie.avg_rating }}</div>
+                    <div class="card-score-label">Avg Rating</div>
+                </div>
+                <div class="card-bar">
+                    <div class="card-bar-fill" style="width: {{ ((movie.avg_rating / 5) * 100)|round }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div style="text-align: center; margin-bottom: 48px;">
+            <a href="/pick-genres" class="btn-logout" style="display: inline-block; padding: 10px 20px;">
+                Ubah Genre Pilihan
+            </a>
+        </div>
+
+        {% endif %}
+
+        <footer>Matchinema &mdash; Film Recommendation System</footer>
     </div>
-
-    <script>
-        function switchMode(mode) {
-            // Update tab buttons
-            const tabs = document.querySelectorAll('.search-tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.closest('.search-tab').classList.add('active');
-
-            // Update search content
-            const contents = document.querySelectorAll('.search-content');
-            contents.forEach(content => content.classList.remove('active'));
-            document.getElementById(mode + '-form').classList.add('active');
-        }
-    </script>
 </body>
 </html>

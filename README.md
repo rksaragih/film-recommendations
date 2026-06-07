@@ -1,23 +1,19 @@
-# 🎬 Implementasi Hybrid Filtering untuk Sistem Rekomendasi Film Menggunakan TF-IDF dan Matrix Factorization
+# 🎬 Matchinema — Sistem Rekomendasi Film Personal
 
-> Menggabungkan Content-Based Filtering dan Collaborative Filtering untuk rekomendasi film yang lebih akurat dan personal.
+> Sistem rekomendasi film terpersonalisasi berbasis **Collaborative Filtering** menggunakan **Singular Value Decomposition (SVD)**, dilengkapi strategi penanganan user baru berbasis preferensi genre.
 
 ---
 
 ## 📌 Deskripsi
 
-Proyek ini membangun sistem rekomendasi film menggunakan pendekatan **Hybrid Filtering** yang menggabungkan dua metode utama:
+Proyek ini membangun sistem rekomendasi film yang **terpersonalisasi per user** — setiap user mendapatkan rekomendasi yang berbeda berdasarkan pola rating mereka sendiri dan kesamaan selera dengan user lain.
 
-- **Content-Based Filtering (CBF)** — merekomendasikan film berdasarkan kemiripan konten (genre, keyword, cast, director, overview) menggunakan **TF-IDF + Cosine Similarity**.
-- **Collaborative Filtering (CF)** — merekomendasikan film berdasarkan pola rating pengguna menggunakan **SVD (Singular Value Decomposition)** untuk matrix factorization.
+Sistem menggunakan pendekatan **Collaborative Filtering berbasis Matrix Factorization (SVD)** sebagai metode utama, dengan strategi berbeda tergantung kondisi user:
 
-Kedua skor digabungkan dengan **weighted average** untuk rekomendasi hybrid yang akurat dan personal.
-
-**Fitur Terbaru**:
-- 🔍 **Dual Search Mode**: 
-  - **Judul Film**: Input judul film yang ada di dataset
-  - **Keyword Search**: Input deskripsi/keyword untuk menemukan film mirip (bahkan yang tidak ada di dataset!)
-- 🌐 **Multi-language Support**: Sistem otomatis menerjemahkan input dari Bahasa Indonesia ke Inggris
+| Kondisi User | Metode | Penjelasan |
+|---|---|---|
+| **User lama** (punya riwayat rating) | Collaborative Filtering — SVD | Prediksi rating per user berdasarkan pola rating user-user lain yang seleranya serupa, lalu tampilkan film yang belum pernah ditonton |
+| **User baru** (belum punya riwayat rating) | Filter genre + avg rating | User memilih genre favorit, sistem menampilkan film dengan rata-rata rating tertinggi dari pengguna lain (min. 50 penilai) |
 
 Dataset yang digunakan:
 - **TMDB (The Movie Database)** — metadata film: `movies_metadata.csv`, `credits.csv`, `keywords.csv`
@@ -34,31 +30,35 @@ film-recommendation/
 │   ├── credits.csv             # Data cast & crew (TMDB)
 │   ├── keywords.csv            # Keyword film (TMDB)
 │   ├── ratings.csv             # Rating pengguna (MovieLens)
-│   ├── ratings_small.csv       # Subset rating untuk testing
-│   ├── links.csv               # Mapping movieId ke tmdbId
-│   ├── clean_movies.csv        # Output preprocessing
+│   ├── links.csv               # Mapping movieId ↔ tmdbId
+│   ├── clean_movies.csv        # Output preprocessing (id, title, genres, tags)
 │   └── clean_ratings.csv       # Rating yang sudah dibersihkan
 ├── models/
-│   ├── movies.pkl                 # DataFrame film (CBF + metadata)
-│   ├── similarity.pkl             # Matrix similarity CBF (TF-IDF cosine)
-│   ├── cf_predictions.pkl         # CF score normalized per film (SVD)
-│   ├── movie_id_to_idx.pkl        # Mapping movie ID ke index
-│   ├── tfidf_vectorizer.pkl       # TF-IDF vectorizer (untuk keyword search)
-│   └── tfidf_matrix.pkl           # TF-IDF matrix (untuk keyword search)
+│   ├── cf_predictions.pkl      # CF score rata-rata per film (fallback)
+│   ├── svd_U.pkl               # Matriks user latent factors (n_users × k)
+│   ├── svd_sigma.pkl           # Singular values SVD (k,)
+│   ├── svd_Vt.pkl              # Matriks item latent factors (k × n_movies)
+│   ├── user_ratings_mean.pkl   # Rata-rata rating per user
+│   ├── user_id_to_idx.pkl      # Mapping userId → index SVD
+│   ├── movie_id_to_idx_cf.pkl  # Mapping movieId → index SVD
+│   └── cf_movie_ids.pkl        # Urutan movie ID di Vt
 ├── insight/
 │   ├── 1_top_genre.png         # Visualisasi top 10 genre
 │   ├── 2_distribusi_rating.png # Visualisasi distribusi rating
-│   ├── 3_top_film_dirating.png # Visualisasi top 10 film dirating
-│   ├── 4_film_per_tahun.png    # Visualisasi film per tahun rilis
-│   └── 5_top_user_aktif.png    # Visualisasi top 10 user aktif
+│   ├── 3_top_film_dirating.png # Visualisasi top 10 film terbanyak dirating
+│   ├── 4_film_per_tahun.png    # Visualisasi jumlah film per tahun rilis
+│   └── 5_top_user_aktif.png    # Visualisasi top 10 user paling aktif
 ├── src/
 │   ├── preprocessing.py        # Pembersihan & transformasi data
-│   ├── train_model.py          # Training CBF (TF-IDF) + CF (SVD)
-│   ├── evaluate_model.py       # Evaluasi & uji rekomendasi hybrid
-│   ├── app.py                  # Flask web app untuk rekomendasi
-│   ├── spark_analysis.py       # Analisis data dengan Spark + visualisasi
-│   └── test.py                 # Testing & debugging
-├── requirements.txt            # Dependency list
+│   ├── train_model.py          # Training Collaborative Filtering (SVD)
+│   ├── evaluate_model.py       # Evaluasi rekomendasi personal & user baru
+│   ├── app.py                  # Flask web app
+│   └── spark_analysis.py       # Analisis & visualisasi data dengan Spark
+├── templates/
+│   ├── index.html              # Halaman utama (rekomendasi)
+│   ├── login.html              # Halaman login
+│   └── pick_genres.html        # Halaman pilih genre (user baru)
+├── requirements.txt
 └── README.md
 ```
 
@@ -79,16 +79,16 @@ cd film-recommendation
 pip install -r requirements.txt
 ```
 
-Dependencies:
-- `pandas`, `numpy` — data manipulation
-- `scikit-learn` — TF-IDF vectorizer & metrics
-- `scipy` — SVD sparse matrix factorization
-- `nltk` — text preprocessing
-- `pyspark` — distributed analysis & visualization
-- `matplotlib`, `seaborn` — plotting
-- `flask` — web framework (opsional, untuk `app.py`)
+| Library | Kegunaan |
+|---|---|
+| `pandas`, `numpy` | Manipulasi data |
+| `scikit-learn` | Preprocessing teks |
+| `scipy` | SVD sparse matrix decomposition |
+| `nltk` | Stemming teks |
+| `flask` | Web framework |
+| `pyspark`, `matplotlib`, `seaborn` | Analisis & visualisasi data |
 
-### 3. Download NLTK data (optional)
+### 3. Download NLTK data
 
 ```python
 import nltk
@@ -97,15 +97,14 @@ nltk.download('punkt')
 
 ### 4. Siapkan dataset
 
-Letakkan semua file dataset di folder `Dataset/`:
-- `movies_metadata.csv`, `credits.csv`, `keywords.csv` → dari [TMDB](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset)
-- `ratings.csv`, `links.csv` → dari [MovieLens](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset)
+Letakkan semua file dataset di folder `Dataset/`. Dataset dapat diunduh dari:
+- [Kaggle — The Movies Dataset](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset)
 
 ---
 
 ## 🚀 Cara Menjalankan
 
-Jalankan secara berurutan dari folder `src/`:
+Jalankan secara **berurutan** dari folder `src/`:
 
 ### 1. Preprocessing
 
@@ -114,10 +113,15 @@ python preprocessing.py
 ```
 
 Membersihkan dan menggabungkan dataset:
-- Hapus duplicate, missing values
-- Extract genre, keywords dari JSON
-- Kombinasi metadata dengan ratings
-- Output: `Dataset/clean_movies.csv`, `Dataset/clean_ratings.csv`
+- Validasi & konversi ID film
+- Merge `movies_metadata`, `credits`, `keywords`
+- Parse kolom JSON: genres, cast, crew, keywords
+- Bangun kolom `tags` (overview + genres + keywords + cast + director) → lowercase + stemming
+- Bersihkan dan normalisasi data rating
+
+Output:
+- `Dataset/clean_movies.csv` — kolom: `id`, `title`, `genres`, `tags`
+- `Dataset/clean_ratings.csv` — kolom: `userId`, `movieId`, `rating`
 
 ### 2. Training Model
 
@@ -125,12 +129,14 @@ Membersihkan dan menggabungkan dataset:
 python train_model.py
 ```
 
-Melatih model hybrid:
-- **CBF**: TF-IDF vectorization pada `tags` → cosine similarity matrix
-- **CF**: SVD pada sparse user-item matrix dari ratings → normalized CF scores per film
-- Output: `models/movies.pkl`, `models/similarity.pkl`, `models/cf_predictions.pkl`, `models/movie_id_to_idx.pkl`, `models/tfidf_vectorizer.pkl`, `models/tfidf_matrix.pkl`
+Melatih model Collaborative Filtering berbasis SVD:
+- Bangun sparse user-item matrix dari data rating (`csr_matrix`)
+- Mean-centering per user untuk menghilangkan bias rating
+- SVD decomposition dengan `k=50` latent factors
+- Simpan komponen `U`, `sigma`, `Vt` untuk prediksi personal per user
+- Hitung CF score rata-rata sebagai fallback
 
-**Note**: Dengan dataset penuh (~26M ratings, 45K+ films), training CF bisa memakan waktu beberapa menit.
+Output: 8 file `.pkl` di folder `models/`
 
 ### 3. Evaluasi Model
 
@@ -138,89 +144,122 @@ Melatih model hybrid:
 python evaluate_model.py
 ```
 
-Menguji rekomendasi hybrid dan menampilkan:
-- Top-N recommendations untuk film tertentu
-- CBF score (content similarity)
-- CF score (collaborative rating)
-- Final hybrid score (weighted average)
+Mengevaluasi dua skenario:
 
-### 4. (Optional) Analisis Data dengan Spark
+**Skenario 1 — User Lama:**
+- Bagian A (Deskriptif): Top-N rekomendasi personal beserta skor prediksi
+- Bagian B (Metrik): MAE & RMSE — bandingkan prediksi SVD vs rating asli pada film yang sudah ditonton sebagai *sanity check* model
 
-```bash
-python spark_analysis.py
+**Skenario 2 — User Baru:**
+- Bagian A (Deskriptif): Top-N film populer berdasarkan genre pilihan
+- Bagian B (Metrik): Distribusi avg rating dari hasil rekomendasi
+
+Untuk mengganti user atau genre yang dievaluasi, ubah bagian `__main__`:
+
+```python
+evaluate_personal(user_id=1, top_n=10)
+evaluate_cold_start(selected_genres=["Action", "Comedy"], top_n=10)
 ```
 
-Menghasilkan 5 visualisasi Spark:
-1. Top 10 genre terpopuler
-2. Distribusi rating pengguna
-3. Top 10 film terbanyak dirating
-4. Jumlah film per tahun rilis
-5. Top 10 user paling aktif
-
-Output tersimpan di folder `insight/` sebagai PNG.
-
-### 5. (Optional) Flask Web App
+### 4. Flask Web App
 
 ```bash
 python app.py
 ```
 
-Menjalankan web interface untuk sistem rekomendasi di `http://localhost:5000`.
+Buka browser di `http://localhost:5000`.
 
-**Fitur Web App**:
-- **Mode 1 - Cari Judul Film**: 
-  - Input judul film exact yang ada di dataset
-  - Autocomplete dari daftar film yang tersedia
-  - Cocok jika tahu judul film secara pasti
-  
-- **Mode 2 - Cari dengan Keyword** (Fitur Baru):
-  - Input deskripsi bebas (genre, aktor, tema, dll)
-  - Support Bahasa Indonesia & Inggris (auto-translate)
-  - Cocok untuk film baru atau yang belum ada di dataset
-  - Contoh: "film action dengan aktor Tom Cruise", "sci-fi thriller", "animated family movie"
+### 5. (Opsional) Analisis Data dengan Spark
 
-**Note**: Keyword search menggunakan TF-IDF + cosine similarity tanpa memerlukan film ada di database.
+```bash
+python spark_analysis.py
+```
+
+Menghasilkan 5 visualisasi yang tersimpan di folder `insight/`.
+
+---
+
+## 🔐 Alur Penggunaan Web App
+
+```
+Buka /
+    │
+    └─ Belum login → halaman kosong + tombol Login
+            │
+            ▼
+        /login — input User ID (angka)
+            │
+            ├─ User punya riwayat rating
+            │       └─ → Halaman utama
+            │              Rekomendasi personal via SVD
+            │              (film belum ditonton, prediksi rating tertinggi)
+            │
+            └─ User belum punya riwayat rating
+                    └─ → /pick-genres
+                           Pilih 1+ genre favorit
+                                │
+                                ▼
+                           Halaman utama
+                           Film populer sesuai genre
+                           (avg rating tertinggi, min. 50 penilai)
+```
+
+**Catatan:** Tidak ada registrasi — siapapun bisa masuk dengan User ID angka apapun. Jika ID tidak dikenal atau belum punya riwayat rating, user otomatis diarahkan ke halaman pilih genre.
 
 ---
 
 ## 📊 Metodologi
 
-### Content-Based Filtering (CBF)
-1. **Text Preprocessing**: Ekstrak dan kombinasi genre, keywords, cast, director, overview menjadi `tags`
-2. **TF-IDF Vectorization**: Convert tags menjadi vektor numerik dengan bobot term frequency-inverse document frequency
-   - `max_features=5000`, `ngram_range=(1,2)`, `sublinear_tf=True`
-3. **Similarity Computation**: Hitung cosine similarity antar film menggunakan `linear_kernel`
-   - Output: Matrix similarity (45K+ × 45K+)
+### Collaborative Filtering — SVD (User Lama)
 
-### Collaborative Filtering (CF)
-1. **Sparse Matrix Construction**: Bangun user-item matrix dari ratings data (~26M entries)
-   - Menggunakan `csr_matrix` untuk efisiensi memori
-2. **Normalization**: Demean ratings per user untuk menghilangkan bias rating behavior
-3. **SVD Decomposition**: Faktorisasi matriks dengan k=50 latent factors
-   - Menggunakan `scipy.sparse.linalg.svds` untuk sparse SVD
-4. **Score Aggregation**: Hitung mean predicted rating per film dan normalisasi ke [0,1]
+Collaborative Filtering bekerja dengan asumsi bahwa user yang memiliki pola rating serupa di masa lalu akan menyukai film yang sama di masa depan.
 
-### Hybrid Recommendation
-- **Final Score** = `cbf_weight × cbf_score + cf_weight × cf_score`
-- Default: `cbf_weight=0.5`, `cf_weight=0.5` (dapat dikonfigurasi)
+**1. Bangun sparse user-item matrix**
 
-### Keyword Search (Fitur Baru)
-1. **Language Translation**: 
-   - Input user diterjemahkan ke Bahasa Inggris menggunakan `deep-translator`
-   - Mendukung input Bahasa Indonesia dan Inggris
-   
-2. **TF-IDF Vectorization**: 
-   - Keyword user di-vectorize dengan TF-IDF vocabulary yang sama dengan training CBF
-   - Tidak memerlukan film ada di database sebelumnya
-   
-3. **Similarity Computation**:
-   - Hitung cosine similarity antara keyword vector dan semua film tags
-   - Ranking berdasarkan similarity + CF scores
-   
-4. **Advantages**:
-   - ✅ Dapat merekomendasikan film baru yang belum ada di dataset
-   - ✅ Support natural language queries (deskripsi, genre, aktor, tema)
-   - ✅ Lebih fleksibel dibanding exact title matching
+Data rating direpresentasikan sebagai matrix `(n_users × n_movies)` menggunakan `csr_matrix` untuk efisiensi memori, karena sebagian besar entri kosong (*sparse*).
+
+**2. Mean-centering per user**
+
+Rating setiap user dikurangi rata-rata ratingnya sendiri:
+```
+demeaned[u][i] = rating[u][i] - mean_rating[u]
+```
+Ini menghilangkan *user bias* — misalnya user yang selalu memberi bintang 5 vs user yang pelit memberi bintang tinggi.
+
+**3. SVD Decomposition**
+
+Matrix didekomposisi menjadi tiga komponen:
+```
+R ≈ U × diag(sigma) × Vt
+```
+- `U` → profil laten setiap user `(n_users × k)`
+- `sigma` → bobot setiap dimensi laten `(k,)`
+- `Vt` → profil laten setiap film `(k × n_movies)`
+
+Dengan `k=50` latent factors, SVD menangkap preferensi tersembunyi seperti kecenderungan menyukai film bergenre gelap, film keluarga, atau film dengan tempo cepat — tanpa label eksplisit.
+
+**4. Prediksi rating per user**
+
+```
+predicted[u] = U[u] × diag(sigma) × Vt + mean_rating[u]
+```
+
+Hasilnya adalah vektor prediksi rating user `u` untuk semua film, dikembalikan ke skala asli (0–5), lalu dinormalisasi ke rentang 0–1 untuk keperluan ranking.
+
+**5. Filter film yang sudah ditonton**
+
+Film yang sudah pernah diberi rating oleh user dikeluarkan dari daftar, sehingga rekomendasi hanya berisi film baru yang belum ditonton.
+
+---
+
+### Penanganan User Baru (Cold Start)
+
+Karena SVD membutuhkan riwayat rating untuk membuat prediksi, user yang belum pernah memberi rating tidak bisa dilayani oleh model. Strategi yang digunakan:
+
+1. User memilih satu atau lebih genre favorit
+2. Sistem memfilter film yang memiliki minimal satu genre yang dipilih
+3. Film diurutkan berdasarkan rata-rata rating dari semua pengguna lain
+4. Hanya film yang sudah dinilai oleh **minimal 50 user** yang ditampilkan — untuk menghindari film obscure yang kebetulan mendapat rating sempurna dari sedikit penilai
 
 ---
 
@@ -228,67 +267,74 @@ Menjalankan web interface untuk sistem rekomendasi di `http://localhost:5000`.
 
 | Metrik | Nilai |
 |---|---|
-| Jumlah Film | ~45,608 |
-| Jumlah User | ~270,896 |
-| Jumlah Rating | ~25,981,403 |
-| Sparsity | >99.99% |
-| Rating Range | 0.5 - 5.0 |
+| Jumlah Film | ~45.608 |
+| Jumlah User | ~270.896 |
+| Jumlah Rating | ~25.981.403 |
+| Sparsity | >99,99% |
+| Rating Range | 0,5 – 5,0 |
 
 ---
 
-## 🎯 Contoh Output
+## 🎯 Contoh Output Evaluasi
 
-### Rekomendasi Hybrid
+### Skenario 1 — User Lama (User ID: 1)
 
 ```
-==========================================================
-REKOMENDASI FILM UNTUK: Toy Story
-(CBF weight: 0.5 | CF weight: 0.5)
-==========================================================
-1. Toy Story 2
-   CBF Score   : 0.4474
-   CF Score    : 0.7823
-   Final Score : 0.6149
+════════════════════════════════════════════════════════════
+EVALUASI USER ID: 1
+════════════════════════════════════════════════════════════
 
-2. Toy Story 3
-   CBF Score   : 0.4103
-   CF Score    : 0.8156
-   Final Score : 0.6130
+  A. TOP-10 REKOMENDASI PERSONAL
+  #    Judul                                    Genre                      Score
+  1    Natural Born Killers                     Crime, Thriller, Drama    0.8410
+  2    Alien                                    Horror, Action, Thriller  0.8392
+  3    Blade Runner                             Science Fiction, Drama    0.8388
+  4    Men in Black                             Action, Adventure, Comedy 0.8369
+  5    GoodFellas                               Drama, Crime              0.8363
+  ...
 
-3. Partysaurus Rex
-   CBF Score   : 0.3113
-   CF Score    : 0.6234
-   Final Score : 0.4674
+  B. AKURASI PREDIKSI SVD (Sanity Check)
+  Judul                           Actual  Prediksi  Selisih
+  The Godfather                      5.0      4.99     0.01
+  Fight Club                         4.0      4.15     0.15
+  The Dark Knight                    4.0      4.18     0.18
+  The Hobbit: An Unexpected Journey  0.5      4.24     3.74  ← outlier
 
-==================================================
-                  CBF      CF     Final
-Average Score   0.3559  0.7405  0.5482
-Highest Score   0.4474  0.8156  0.6149
-Lowest Score    0.3113  0.6234  0.4674
+  MAE  (rata-rata selisih)        0.6717
+  RMSE (penalti error besar)      0.9643
+  ~ Cukup baik — prediksi meleset < 1 bintang
+```
+
+### Skenario 2 — User Baru (Genre: Action, Comedy)
+
+```
+════════════════════════════════════════════════════════════
+EVALUASI COLD START
+Genre dipilih: Action, Comedy
+════════════════════════════════════════════════════════════
+
+  A. TOP-10 REKOMENDASI
+  #    Judul                           Genre                  Avg ★
+  1    Band of Brothers                Action, Drama, War      4.39
+  2    Seven Samurai                   Action, Drama           4.26
+  3    The Dark Knight                 Drama, Action, Crime    4.18
+  4    Inception                       Action, Thriller        4.16
+  5    The Matrix                      Action, Science Fiction 4.15
+  ...
+
+  B. DISTRIBUSI RATING
+  Total kandidat film              6.337 film
+  Avg rating tertinggi              4.39
+  Avg rating terendah               4.15
+  Rata-rata avg rating              4.20
 ```
 
 ---
 
-## 🛠️ Teknologi & Dependencies
+## ⚠️ Catatan & Keterbatasan
 
-| Library | Versi | Kegunaan |
-|---|---|---|
-| `pandas` | ≥2.0.0 | Data manipulation & cleaning |
-| `scikit-learn` | ≥1.3.0 | TF-IDF vectorizer, metrics |
-| `scipy` | ≥1.10.0 | SVD sparse matrix decomposition |
-| `numpy` | latest | Numerical computations |
-| `nltk` | ≥3.8.0 | Text preprocessing |
-| `pyspark` | ≥3.5.0 | Distributed data analysis |
-| `matplotlib` | ≥3.7.0 | Plotting utilities |
-| `seaborn` | ≥0.12.0 | Statistical visualization |
-| `flask` | (optional) | Web framework untuk app.py |
-| `deep-translator` | ≥1.10.0 | Multi-language translation (Bahasa Indonesia → Inggris) |
+**Bias menuju rata-rata** — SVD cenderung menarik prediksi ke arah rata-rata populasi. Film yang sangat disukai atau sangat dibenci oleh seorang user bisa meleset jauh dari prediksi (lihat contoh The Hobbit: actual 0.5, prediksi 4.24). Ini adalah karakteristik inheren collaborative filtering, bukan bug.
 
----
+**Cold start murni rule-based** — Penanganan user baru tidak menggunakan machine learning, melainkan filter dan pengurutan sederhana berdasarkan rata-rata rating. Seiring user mulai memberi rating pada film, sistem secara otomatis beralih ke rekomendasi personal berbasis SVD.
 
-## 👨‍💻 Informasi Proyek
-
-- **Institusi**: Institut Pertanian Bogor (IPB University)
-- **Mata Kuliah**: Big Data
-- **Semester**: 6
-- **Tahun**: 2026
+**Minimum rating threshold** — Filter minimal 50 penilai pada cold start bertujuan menjaga kualitas rekomendasi agar tidak didominasi film yang terlalu obscure.

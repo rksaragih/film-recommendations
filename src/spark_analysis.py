@@ -1,4 +1,5 @@
 import os
+import ast
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
@@ -74,20 +75,17 @@ def save_fig(filename):
 
 print("\n[1/5] Top 10 Genre Terpopuler...")
 
-genre_df = spark.sql("""
-    SELECT genres FROM movies
-    WHERE genres IS NOT NULL AND genres != '[]'
-""").toPandas()
-
-# Parse genre di pandas karena butuh ast.literal_eval
-import ast
-
 def extract_genres(val):
     try:
         items = ast.literal_eval(val)
         return [item['name'] for item in items if isinstance(item, dict)]
     except:
         return []
+
+genre_df = spark.sql("""
+    SELECT genres FROM movies
+    WHERE genres IS NOT NULL AND genres != '[]'
+""").toPandas()
 
 all_genres = []
 for val in genre_df['genres']:
